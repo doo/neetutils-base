@@ -31,6 +31,7 @@ import java.util.Vector;
 import com.github.rjeschke.neetutils.fn.FnCombine;
 import com.github.rjeschke.neetutils.fn.FnEquals;
 import com.github.rjeschke.neetutils.fn.FnFoldStep;
+import com.github.rjeschke.neetutils.fn.FnFoldStepWithIndex;
 import com.github.rjeschke.neetutils.fn.FnInstance;
 import com.github.rjeschke.neetutils.fn.FnMapping;
 import com.github.rjeschke.neetutils.fn.FnPredicate;
@@ -1056,6 +1057,30 @@ public final class Colls
             map.put(key, d);
             return d;
         }
+        return b;
+    }
+
+    public final static <A, B> B reduce(final List<A> coll, final
+    FnFoldStepWithIndex<A, B> fn, final B initial)
+    {
+        if(coll instanceof RandomAccess)
+        {
+            final int sz = coll.size();
+            B b = initial;
+            for(int i = 0; i < sz; i++)
+                b = fn.applyFoldStep(coll.get(i), b, i);
+            return b;
+        }
+        return reduce((Iterable<A>)coll, fn, initial);
+    }
+
+    public final static <A, B> B reduce(final Iterable<A> coll, final
+    FnFoldStepWithIndex<A, B> fn, final B initial)
+    {
+        B b = initial;
+        int i = 0;
+        for(final A a : coll)
+            b = fn.applyFoldStep(a, b, i++);
         return b;
     }
 }
