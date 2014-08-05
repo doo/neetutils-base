@@ -70,16 +70,24 @@ public final class WavReader
 
     public static WavReader load(final File file) throws IOException
     {
-        try (final FileInputStream fis = new FileInputStream(file))
+        FileInputStream fis = null;
+        try
         {
+            fis = new FileInputStream(file);
             return load(new BufferedInputStream(fis));
+        } finally {
+            if (fis != null) {
+                fis.close();
+            }
         }
     }
 
     public static WavReader load(final InputStream input) throws IOException
     {
-        try (final NInputStreamLE in = new NInputStreamLE(input))
+        NInputStreamLE in = null;
+        try
         {
+            in = new NInputStreamLE(input);
             if (!in.readString(4, 0).equals("RIFF")) throw new IOException("Not a WAV file.");
             in.readI32();
             if (!in.readString(4, 0).equals("WAVE")) throw new IOException("Not a WAV file.");
@@ -119,6 +127,10 @@ public final class WavReader
             }
 
             return new WavReader(samplerate, channels, ret, iret);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
         }
     }
 }

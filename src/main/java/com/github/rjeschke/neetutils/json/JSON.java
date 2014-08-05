@@ -66,8 +66,10 @@ public final class JSON
      */
     public final static StringBuilder beautify(final StringBuilder sb, final String json) throws IOException
     {
-        try (final Reader reader = new StringReader(json))
+        Reader reader = null;
+        try
         {
+            reader = new StringReader(json);
             final JSONTokenizer tokenizer = new JSONTokenizer(reader);
             tokenizer.next();
             while (tokenizer.getCurrentToken() != Token.EOF)
@@ -79,6 +81,10 @@ public final class JSON
                 }
             }
             return sb;
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
         }
     }
 
@@ -107,9 +113,15 @@ public final class JSON
      */
     public final static Object decode(final String string) throws IOException
     {
-        try (final StringReader reader = new StringReader(string))
+        StringReader reader = null;
+        try
         {
+            reader = new StringReader(string);
             return decode(reader);
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
         }
     }
 
@@ -148,9 +160,15 @@ public final class JSON
      */
     public final static <T extends JSONMarshallable> T decodeInto(final String string, final T object) throws IOException
     {
-        try (final StringReader reader = new StringReader(string))
+        StringReader reader = null;
+        try
         {
+            reader = new StringReader(string);
             return decodeInto(reader, object);
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
         }
     }
 
