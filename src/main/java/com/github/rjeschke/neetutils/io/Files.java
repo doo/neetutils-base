@@ -167,28 +167,50 @@ public final class Files implements Runnable
 
     public final static void copy(final File input, final File output) throws IOException
     {
-        try (final InputStream in = new FileInputStream(input))
+        InputStream in = null;
+        OutputStream out = null;
+        try
         {
-            try (final OutputStream out = new FileOutputStream(output))
-            {
-                copy(in, out);
+            in = new FileInputStream(input);
+            out = new FileOutputStream(output);
+
+            copy(in, out);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+
+            if (out != null) {
+                out.close();
             }
         }
     }
 
     public final static void copy(final InputStream in, final File output) throws IOException
     {
-        try (final OutputStream out = new FileOutputStream(output))
+        OutputStream out = null;
+        try
         {
+            out = new FileOutputStream(output);
             copy(in, out);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
     }
 
     public final static void copy(final File input, final OutputStream out) throws IOException
     {
-        try (final InputStream in = new FileInputStream(input))
+        InputStream in = null;
+        try
         {
+            in = new FileInputStream(input);
             copy(in, out);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
         }
     }
 
@@ -211,8 +233,10 @@ public final class Files implements Runnable
 
     public final static byte[] asBytes(final File file) throws IOException
     {
-        try (final FileInputStream fis = new FileInputStream(file))
+        FileInputStream fis = null;
+        try
         {
+            fis = new FileInputStream(file);
             final byte[] buffer = new byte[(int)file.length()];
             int p = 0;
             while (p < buffer.length)
@@ -223,6 +247,10 @@ public final class Files implements Runnable
             }
             if (p != buffer.length) throw new IOException("Unexpected end of stream, expected " + buffer.length + ", got " + p + " bytes");
             return buffer;
+        } finally {
+            if (fis != null) {
+                fis.close();
+            }
         }
     }
 
@@ -279,9 +307,15 @@ public final class Files implements Runnable
 
     public final static void saveBytes(final File file, final byte[] bytes, final int offs, final int len) throws IOException
     {
-        try (final FileOutputStream fos = new FileOutputStream(file))
+        FileOutputStream fos = null;
+        try
         {
+            fos = new FileOutputStream(file);
             fos.write(bytes, offs, len);
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
         }
     }
 
@@ -359,8 +393,10 @@ public final class Files implements Runnable
         final ArrayList<String> classes = new ArrayList<>();
         try
         {
-            try (final JarFile jar = new JarFile(file))
+            JarFile jar = null;
+            try
             {
+                jar = new JarFile(file);
                 final Enumeration<JarEntry> j = jar.entries();
                 while (j.hasMoreElements())
                 {
@@ -369,6 +405,10 @@ public final class Files implements Runnable
                     {
                         classes.add("/" + je.getName());
                     }
+                }
+            } finally {
+                if (jar != null) {
+                    jar.close();
                 }
             }
         }
@@ -388,8 +428,10 @@ public final class Files implements Runnable
             final URL url = new URL(furl.getPath());
             final String f = URLDecoder.decode(url.getFile(), System.getProperty("file.encoding"));
             final File dir = new File(f.substring(0, f.lastIndexOf('!')));
-            try (final JarFile jar = new JarFile(dir))
+            JarFile jar = null;
+            try
             {
+                jar = new JarFile(dir);
                 final Enumeration<JarEntry> j = jar.entries();
                 while (j.hasMoreElements())
                 {
@@ -401,6 +443,10 @@ public final class Files implements Runnable
                             classes.add("/" + je.getName());
                         }
                     }
+                }
+            } finally {
+                if (jar != null) {
+                    jar.close();
                 }
             }
         }

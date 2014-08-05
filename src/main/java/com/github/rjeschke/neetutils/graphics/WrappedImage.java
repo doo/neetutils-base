@@ -162,10 +162,16 @@ public class WrappedImage
 
     public static WrappedImage fromResource(final String resourcename, final boolean hasTransparency) throws IOException
     {
-        try (final InputStream in = WrappedImage.class.getResourceAsStream(resourcename))
+        InputStream in = null;
+        try
         {
+            in = WrappedImage.class.getResourceAsStream(resourcename);
             final WrappedImage img = new WrappedImage(ImageIO.read(in), hasTransparency);
             return img;
+        } finally {
+            if (in != null) {
+                in.close();
+            }
         }
     }
 }

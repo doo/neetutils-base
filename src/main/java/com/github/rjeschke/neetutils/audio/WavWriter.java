@@ -119,9 +119,15 @@ public final class WavWriter
      */
     public void save(final File file) throws IOException
     {
-        try (final OutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+        OutputStream out = null;
+        try
         {
+            out = new BufferedOutputStream(new FileOutputStream(file));
             this.save(out);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
     }
 
@@ -235,8 +241,10 @@ public final class WavWriter
             out.write(DATA);
             out.write32(dLen);
 
-            try (final FileInputStream in = new FileInputStream(this.tempFile))
+            FileInputStream in = null;
+            try
             {
+                in = new FileInputStream(this.tempFile);
                 final byte[] b = new byte[8192];
                 int todo = dLen;
                 while (todo > 0)
@@ -244,6 +252,10 @@ public final class WavWriter
                     final int read = in.read(b);
                     out.write(b, 0, read);
                     todo -= read;
+                }
+            } finally {
+                if (in != null) {
+                    in.close();
                 }
             }
         }
